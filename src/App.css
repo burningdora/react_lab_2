@@ -66,11 +66,11 @@
 .state {
   padding: 12px;
   border-radius: 10px;
-  background: #f3f3f3;
+  background: #6ef3f1;
 }
 
 .state.error {
-  background: #ffe6e6;
+  background: #f6a9f1;
 }
 
 .grid {

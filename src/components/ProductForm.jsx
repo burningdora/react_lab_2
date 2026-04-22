@@ -1,6 +1,14 @@
+// Импортируем React-хуки
+// useState — хранит данные формы
+// useEffect — реагирует на изменение редактируемого товара
 import { useEffect, useState } from "react";
+
+// Импорт стилей формы
 import "./ProductForm.css";
 
+
+// Пустой объект формы
+// Используется как начальное состояние и для очистки формы
 const emptyForm = {
   title: "",
   description: "",
@@ -11,16 +19,27 @@ const emptyForm = {
   thumbnail: "",
 };
 
+
+// Компонент формы добавления / редактирования товара
+// Получает функции и данные из родительского компонента App
 function ProductForm({
-  onAddProduct,
-  onUpdateProduct,
-  editingProduct,
-  onCancelEdit,
+  onAddProduct,     // функция добавления товара
+  onUpdateProduct,  // функция обновления товара
+  editingProduct,   // товар который сейчас редактируется
+  onCancelEdit,     // функция отмены редактирования
 }) {
+
+  // useState хранит текущее состояние формы
   const [formData, setFormData] = useState(emptyForm);
 
+
+  // useEffect срабатывает когда меняется editingProduct
+  // Если выбран товар для редактирования — заполняем форму его данными
+  // Если редактирование отменено — очищаем форму
   useEffect(() => {
+
     if (editingProduct) {
+
       setFormData({
         title: editingProduct.title || "",
         description: editingProduct.description || "",
@@ -30,44 +49,87 @@ function ProductForm({
         category: editingProduct.category || "",
         thumbnail: editingProduct.thumbnail || "",
       });
+
     } else {
+
+      // если редактирование не активно — очищаем форму
       setFormData(emptyForm);
     }
+
   }, [editingProduct]);
 
+
+
+  // Функция изменения данных в input
   function handleChange(e) {
+
+    // получаем имя поля и его значение
     const { name, value } = e.target;
+
+    // обновляем соответствующее поле формы
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
   }
 
+
+
+  // Функция отправки формы
   function handleSubmit(e) {
+
+    // предотвращаем перезагрузку страницы
     e.preventDefault();
 
+
+    // создаем объект товара
     const productData = {
       ...formData,
+
+      // преобразуем строку в число
       price: Number(formData.price),
       rating: Number(formData.rating),
     };
 
+
+    // если мы редактируем товар
     if (editingProduct) {
+
+      // вызываем функцию обновления
       onUpdateProduct({
         ...editingProduct,
         ...productData,
       });
+
     } else {
+
+      // иначе создаем новый товар
       onAddProduct(productData);
     }
 
+
+    // после отправки очищаем форму
     setFormData(emptyForm);
   }
 
-  return (
-    <form className="product-form" onSubmit={handleSubmit}>
-      <h2>{editingProduct ? "Редактирование товара" : "Добавление товара"}</h2>
 
+
+  // JSX — разметка формы
+  return (
+
+    // Форма отправляется через handleSubmit
+    <form className="product-form" onSubmit={handleSubmit}>
+
+      {/* Заголовок формы */}
+      <h2>
+        {editingProduct
+          ? "Редактирование товара"
+          : "Добавление товара"}
+      </h2>
+
+
+
+      {/* Поле названия товара */}
       <input
         type="text"
         name="title"
@@ -77,6 +139,8 @@ function ProductForm({
         required
       />
 
+
+      {/* Поле описания */}
       <input
         type="text"
         name="description"
@@ -86,6 +150,8 @@ function ProductForm({
         required
       />
 
+
+      {/* Поле цены */}
       <input
         type="number"
         name="price"
@@ -95,6 +161,8 @@ function ProductForm({
         required
       />
 
+
+      {/* Поле рейтинга */}
       <input
         type="number"
         step="0.1"
@@ -105,6 +173,8 @@ function ProductForm({
         required
       />
 
+
+      {/* Поле бренда */}
       <input
         type="text"
         name="brand"
@@ -114,6 +184,8 @@ function ProductForm({
         required
       />
 
+
+      {/* Поле категории */}
       <input
         type="text"
         name="category"
@@ -123,6 +195,8 @@ function ProductForm({
         required
       />
 
+
+      {/* Поле ссылки на изображение */}
       <input
         type="text"
         name="thumbnail"
@@ -132,19 +206,39 @@ function ProductForm({
         required
       />
 
+
+
+      {/* Блок кнопок формы */}
       <div className="form-actions">
+
+        {/* Кнопка отправки формы */}
         <button type="submit">
-          {editingProduct ? "Сохранить изменения" : "Добавить"}
+
+          {editingProduct
+            ? "Сохранить изменения"
+            : "Добавить"}
+
         </button>
 
+
+        {/* Кнопка отмены редактирования */}
         {editingProduct && (
-          <button type="button" onClick={onCancelEdit}>
+
+          <button
+            type="button"
+            onClick={onCancelEdit}
+          >
             Отмена
           </button>
+
         )}
+
       </div>
+
     </form>
   );
 }
 
+
+// Экспорт компонента
 export default ProductForm;
